@@ -1,0 +1,15 @@
+{
+  "files": {
+    "main.css": "/museum-game/static/css/main.e6c13ad2.css",
+    "main.js": "/museum-game/static/js/main.1f891b9f.js",
+    "static/js/453.47ed6bb3.chunk.js": "/museum-game/static/js/453.47ed6bb3.chunk.js",
+    "index.html": "/museum-game/index.html",
+    "main.e6c13ad2.css.map": "/museum-game/static/css/main.e6c13ad2.css.map",
+    "main.1f891b9f.js.map": "/museum-game/static/js/main.1f891b9f.js.map",
+    "453.47ed6bb3.chunk.js.map": "/museum-game/static/js/453.47ed6bb3.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.e6c13ad2.css",
+    "static/js/main.1f891b9f.js"
+  ]
+}
