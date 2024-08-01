@@ -24,7 +24,15 @@ const Museum = () => {
       {walls.map((wall, index) => (
         <primitive key={index} object={wall} />
       ))}
-      <Page position={[0, 1.5, -4.9]} rotation={[0, 0, 0]} content="Page 1" />
+      <Page position={[0, 1.5, -4.9]} rotation={[0, 0, 0]} content="
+      Controls:
+      w-forward
+      s-backward
+      a-left
+      d-right
+      q-up
+      e-down
+      " />
       <Page position={[0, 1.5, 4.9]} rotation={[0, Math.PI, 0]} content="Page 2" />
       <Page position={[-4.9, 1.5, 0]} rotation={[0, Math.PI / 2, 0]} content="Page 3" />
       <Page position={[4.9, 1.5, 0]} rotation={[0, -Math.PI / 2, 0]} content="Page 4" />

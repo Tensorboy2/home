@@ -26,6 +26,12 @@ const CameraController = () => {
       if (movement.right) {
         velocity.current.x += 0.1;
       }
+      if (movement.up) {
+        velocity.current.y += 0.05;
+      }
+      if (movement.down) {
+        velocity.current.y -= 0.05;
+      }
 
       velocity.current.applyQuaternion(camera.quaternion);
       camera.position.add(velocity.current);
@@ -34,7 +40,7 @@ const CameraController = () => {
 
   return (
     <>
-      <perspectiveCamera ref={cameraRef} fov={60} makeDefault position={[0, 1.6, 5]} />
+      <perspectiveCamera ref={cameraRef} fov={60} makeDefault position={[0, 2.5, 2.5]} />
       <PointerLockControls />
     </>
   );
