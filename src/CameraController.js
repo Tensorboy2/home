@@ -12,7 +12,7 @@ const CameraController = () => {
   useFrame(({ camera }) => {
     if (cameraRef.current) {
       cameraRef.current.getWorldDirection(cameraRef.current.position);
-      velocity.current.set(0, 1.5, 0);
+      velocity.current.set(0, 0, 0);
 
       if (movement.forward) {
         velocity.current.z -= 0.1;
