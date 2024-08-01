@@ -1,5 +1,5 @@
-import React, { useRef } from 'react';
-import { useFrame } from '@react-three/fiber';
+import React, { useRef, useEffect } from 'react';
+import { useFrame, useThree} from '@react-three/fiber';
 import { PointerLockControls } from '@react-three/drei';
 import useKeyboardControls from './hooks/useKeyboardControls';
 import * as THREE from 'three';
@@ -7,8 +7,13 @@ import * as THREE from 'three';
 const CameraController = () => {
   const movement = useKeyboardControls();
   const cameraRef = useRef();
+  const { camera } = useThree();
+  const initialPosition = useRef(new THREE.Vector3(0, 1.5, -1.5));
+  useEffect(() => {
+    camera.position.copy(initialPosition.current);
+  }, [camera]);
+  
   const velocity = useRef(new THREE.Vector3());
-
   useFrame(({ camera }) => {
     if (cameraRef.current) {
       cameraRef.current.getWorldDirection(cameraRef.current.position);
@@ -40,7 +45,7 @@ const CameraController = () => {
 
   return (
     <>
-      <perspectiveCamera ref={cameraRef} fov={60} makeDefault position={[0, 2.5, 2.5]} />
+      <perspectiveCamera ref={cameraRef} fov={60} ma />
       <PointerLockControls />
     </>
   );

@@ -25,17 +25,24 @@ const Museum = () => {
         <primitive key={index} object={wall} />
       ))}
       <Page position={[0, 1.5, -4.9]} rotation={[0, 0, 0]} content="
+      Welcome to my special cv. (Tensorboy2)
+      
       Controls:
-      w-forward
-      s-backward
-      a-left
-      d-right
-      q-up
-      e-down
+      Click on the screen and use mouse to look around
+      Press:
+      w-forward, s-backward
+      a-left, d-right
+      q-up, e-down
       " />
-      <Page position={[0, 1.5, 4.9]} rotation={[0, Math.PI, 0]} content="Page 2" />
-      <Page position={[-4.9, 1.5, 0]} rotation={[0, Math.PI / 2, 0]} content="Page 3" />
-      <Page position={[4.9, 1.5, 0]} rotation={[0, -Math.PI / 2, 0]} content="Page 4" />
+      <Page position={[4.9, 1.5, 0]} rotation={[0, -Math.PI/2, 0]} content="
+      This will be a link to my normal CV.
+      " />
+      <Page position={[-4.9, 1.5, 0]} rotation={[0, Math.PI / 2, 0]} content="
+      This will be a link to earlier projects.
+      " />
+      <Page position={[0, 1.5, 4.9]} rotation={[0, Math.PI, 0]} content="
+      This will be a link to earlier work experience.
+      " />
     </group>
   );
 };
