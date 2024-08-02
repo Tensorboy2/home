@@ -20,22 +20,22 @@ const CameraController = () => {
       velocity.current.set(0, 0, 0);
 
       if (movement.forward) {
-        velocity.current.z -= 0.1;
+        velocity.current.z -= 0.05;
       }
       if (movement.backward) {
-        velocity.current.z += 0.1;
+        velocity.current.z += 0.05;
       }
       if (movement.left) {
-        velocity.current.x -= 0.1;
+        velocity.current.x -= 0.05;
       }
       if (movement.right) {
-        velocity.current.x += 0.1;
+        velocity.current.x += 0.05;
       }
       if (movement.up) {
-        velocity.current.y += 0.05;
+        velocity.current.y += 0.01;
       }
       if (movement.down) {
-        velocity.current.y -= 0.05;
+        velocity.current.y -= 0.01;
       }
 
       velocity.current.applyQuaternion(camera.quaternion);
