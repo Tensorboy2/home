@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 
 const useKeyboardControls = () => {
   const [movement, setMovement] = useState({
@@ -10,43 +10,43 @@ const useKeyboardControls = () => {
     down: false,
   });
 
-  const handleKeyDown = (event) => {
+  const handleKeyDown = useCallback((event) => {
     switch (event.code) {
       case 'KeyW':
-        setMovement((m) => ({ ...m, forward: true }));
+        setMovement((prev) => ({ ...prev, forward: true }));
         break;
       case 'KeyS':
-        setMovement((m) => ({ ...m, backward: true }));
+        setMovement((prev) => ({ ...prev, backward: true }));
         break;
       case 'KeyA':
-        setMovement((m) => ({ ...m, left: true }));
+        setMovement((prev) => ({ ...prev, left: true }));
         break;
       case 'KeyD':
-        setMovement((m) => ({ ...m, right: true }));
+        setMovement((prev) => ({ ...prev, right: true }));
         break;
       default:
         break;
     }
-  };
+  }, []);
 
-  const handleKeyUp = (event) => {
+  const handleKeyUp = useCallback((event) => {
     switch (event.code) {
       case 'KeyW':
-        setMovement((m) => ({ ...m, forward: false }));
+        setMovement((prev) => ({ ...prev, forward: false }));
         break;
       case 'KeyS':
-        setMovement((m) => ({ ...m, backward: false }));
+        setMovement((prev) => ({ ...prev, backward: false }));
         break;
       case 'KeyA':
-        setMovement((m) => ({ ...m, left: false }));
+        setMovement((prev) => ({ ...prev, left: false }));
         break;
       case 'KeyD':
-        setMovement((m) => ({ ...m, right: false }));
+        setMovement((prev) => ({ ...prev, right: false }));
         break;
       default:
         break;
     }
-  };
+  }, []);
 
   useEffect(() => {
     window.addEventListener('keydown', handleKeyDown);
@@ -55,9 +55,9 @@ const useKeyboardControls = () => {
       window.removeEventListener('keydown', handleKeyDown);
       window.removeEventListener('keyup', handleKeyUp);
     };
-  }, []);
+  }, [handleKeyDown, handleKeyUp]);
 
-  return movement;
+  return { movement, setMovement };
 };
 
 export default useKeyboardControls;
