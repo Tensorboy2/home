@@ -32,7 +32,6 @@ const Museum = () => {
       Press:
       w-forward, s-backward
       a-left, d-right
-      q-up, e-down
       " />
       <Page position={[4.9, 1.5, 0]} rotation={[0, -Math.PI/2, 0]} content="
       This will be a link to my normal CV.

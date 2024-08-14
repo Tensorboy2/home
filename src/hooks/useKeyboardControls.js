@@ -24,12 +24,6 @@ const useKeyboardControls = () => {
       case 'KeyD':
         setMovement((m) => ({ ...m, right: true }));
         break;
-      case 'KeyQ':
-        setMovement((m) => ({ ...m, up: true }));
-        break; 
-      case 'KeyE':
-        setMovement((m) => ({ ...m, down: true }));
-        break; 
       default:
         break;
     }
@@ -48,12 +42,6 @@ const useKeyboardControls = () => {
         break;
       case 'KeyD':
         setMovement((m) => ({ ...m, right: false }));
-        break;
-      case 'KeyQ':
-        setMovement((m) => ({ ...m, up: false }));
-        break; 
-      case 'KeyE':
-        setMovement((m) => ({ ...m, down: false }));
         break;
       default:
         break;
