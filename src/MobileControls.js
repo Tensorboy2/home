@@ -39,11 +39,18 @@ const MobileControls = () => {
 
   // Drag-to-look logic
   const lookStart = useRef(null);
+  // For tap-to-jump
+  const tapTimeout = useRef(null);
+  const tapStart = useRef(null);
   const handleLookStart = (e) => {
     lookStart.current = {
       x: e.touches[0].clientX,
       y: e.touches[0].clientY,
     };
+    tapStart.current = Date.now();
+    tapTimeout.current = setTimeout(() => {
+      tapTimeout.current = null;
+    }, 300); // 300ms threshold for tap
   };
   const handleLookMove = (e) => {
     if (!lookStart.current) return;
@@ -53,9 +60,21 @@ const MobileControls = () => {
       x: e.touches[0].clientX,
       y: e.touches[0].clientY,
     };
+    // If moved, cancel tap
+    if (tapTimeout.current) {
+      clearTimeout(tapTimeout.current);
+      tapTimeout.current = null;
+    }
   };
   const handleLookEnd = () => {
+    // If tapTimeout is still active, treat as tap (jump)
+    if (tapTimeout.current && tapStart.current) {
+      window.dispatchEvent(new CustomEvent('mobile-jump'));
+      clearTimeout(tapTimeout.current);
+      tapTimeout.current = null;
+    }
     lookStart.current = null;
+    tapStart.current = null;
   };
 
   if (!isMobile()) return null;

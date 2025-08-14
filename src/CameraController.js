@@ -82,9 +82,30 @@ const CameraController = () => {
         velocityY.current = 0.13; // jump strength
       }
     };
+    const handleMobileJump = () => {
+      if (!isJumping.current) {
+        isJumping.current = true;
+        velocityY.current = 0.13;
+      }
+    };
     window.addEventListener('keydown', handleJump);
-    return () => window.removeEventListener('keydown', handleJump);
+    window.addEventListener('mobile-jump', handleMobileJump);
+    return () => {
+      window.removeEventListener('keydown', handleJump);
+      window.removeEventListener('mobile-jump', handleMobileJump);
+    };
   }, []);
+
+  // Listen for mobile-look event for drag-to-look
+  React.useEffect(() => {
+    const handleMobileLook = (e) => {
+      const dx = e.detail.dx;
+      currentRotation.current.y -= dx * 0.002;
+      camera.rotation.y = currentRotation.current.y;
+    };
+    window.addEventListener('mobile-look', handleMobileLook);
+    return () => window.removeEventListener('mobile-look', handleMobileLook);
+  }, [camera]);
 
   useFrame(({ camera }) => {
     if (cameraRef.current && movement) {
