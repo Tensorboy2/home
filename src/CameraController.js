@@ -6,6 +6,16 @@ import useKeyboardControls from './hooks/useKeyboardControls';
 
 const CameraController = () => {
   const { movement } = useKeyboardControls();
+  const roomBounds = {
+    minX: -4.5,
+    maxX: 4.5,
+    minZ: -4.5,
+    maxZ: 4.5,
+    floorY: 1.5,
+    ceilingY: 2.9,
+  };
+  const isJumping = useRef(false);
+  const velocityY = useRef(0);
   const cameraRef = useRef();
   const { camera } = useThree();
   const initialPosition = useRef(new THREE.Vector3(0, 1.5, -1.5));
@@ -65,24 +75,67 @@ const CameraController = () => {
     };
   }, []);
 
+  useEffect(() => {
+    const handleJump = (e) => {
+      if (e.code === 'Space' && !isJumping.current) {
+        isJumping.current = true;
+        velocityY.current = 0.13; // jump strength
+      }
+    };
+    window.addEventListener('keydown', handleJump);
+    return () => window.removeEventListener('keydown', handleJump);
+  }, []);
+
   useFrame(({ camera }) => {
     if (cameraRef.current && movement) {
       velocity.current.set(0, 0, 0);
 
-      if (movement.forward) velocity.current.z += 0.05;
-      if (movement.backward) velocity.current.z -= 0.05;
-      if (movement.left) velocity.current.x -= 0.05;
-      if (movement.right) velocity.current.x += 0.05;
-
+      // Get forward direction
       camera.getWorldDirection(direction.current);
       direction.current.y = 0;
       direction.current.normalize();
 
-      const horizontalVelocity = direction.current.multiplyScalar(velocity.current.z);
-      horizontalVelocity.x += velocity.current.x;
+      // Get right direction
+      const up = new THREE.Vector3(0, 1, 0);
+      const right = new THREE.Vector3().crossVectors(direction.current, up).normalize();
 
-      camera.position.x += horizontalVelocity.x;
-      camera.position.z += horizontalVelocity.z;
+      let moveVector = new THREE.Vector3();
+      if (movement.forward) moveVector.add(direction.current);
+      if (movement.backward) moveVector.sub(direction.current);
+      if (movement.left) moveVector.sub(right);
+      if (movement.right) moveVector.add(right);
+      moveVector.normalize();
+      moveVector.multiplyScalar(0.05);
+
+      // Calculate new position
+      let newX = camera.position.x + moveVector.x;
+      let newZ = camera.position.z + moveVector.z;
+
+      // Collision detection with room bounds
+      if (newX < roomBounds.minX) newX = roomBounds.minX;
+      if (newX > roomBounds.maxX) newX = roomBounds.maxX;
+      if (newZ < roomBounds.minZ) newZ = roomBounds.minZ;
+      if (newZ > roomBounds.maxZ) newZ = roomBounds.maxZ;
+
+      camera.position.x = newX;
+      camera.position.z = newZ;
+
+      // Gravity and jumping
+      if (isJumping.current) {
+        camera.position.y += velocityY.current;
+        velocityY.current -= 0.008; // gravity
+        if (camera.position.y <= roomBounds.floorY) {
+          camera.position.y = roomBounds.floorY;
+          isJumping.current = false;
+          velocityY.current = 0;
+        }
+        if (camera.position.y > roomBounds.ceilingY) {
+          camera.position.y = roomBounds.ceilingY;
+          velocityY.current = 0;
+        }
+      } else {
+        camera.position.y = roomBounds.floorY;
+      }
     }
   });
 

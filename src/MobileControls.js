@@ -1,94 +1,110 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import useKeyboardControls from './hooks/useKeyboardControls';
 
+// Simple mobile device detection
+const isMobile = () => /Android|iPhone|iPad|iPod|Opera Mini|IEMobile|WPDesktop/i.test(navigator.userAgent);
+
 const MobileControls = () => {
-  const { movement, setMovement } = useKeyboardControls();
+  const { setMovement } = useKeyboardControls();
+  const joystickRef = useRef(null);
+  const dragAreaRef = useRef(null);
+  const dragStart = useRef(null);
 
-  // Set styles for buttons
-  const buttonStyle = {
-    position: 'absolute',
-    bottom: '20px',
-    width: '50px',
-    height: '50px',
-    borderRadius: '50%',
-    backgroundColor: '#333',
-    color: '#fff',
-    border: 'none',
-    fontSize: '20px',
-    cursor: 'pointer',
-    outline: 'none',
-    pointerEvents: 'auto', // Ensure buttons are clickable
+  // Joystick logic
+  const handleJoystickStart = (e) => {
+    dragStart.current = {
+      x: e.touches[0].clientX,
+      y: e.touches[0].clientY,
+    };
+    setMovement({ forward: false, backward: false, left: false, right: false });
   };
 
-  const handleButtonClick = (direction) => {
-    switch (direction) {
-      case 'forward':
-        setMovement((prev) => ({ ...prev, forward: true }));
-        break;
-      case 'backward':
-        setMovement((prev) => ({ ...prev, backward: true }));
-        break;
-      case 'left':
-        setMovement((prev) => ({ ...prev, left: true }));
-        break;
-      case 'right':
-        setMovement((prev) => ({ ...prev, right: true }));
-        break;
-      default:
-        break;
-    }
+  const handleJoystickMove = (e) => {
+    if (!dragStart.current) return;
+    const dx = e.touches[0].clientX - dragStart.current.x;
+    const dy = e.touches[0].clientY - dragStart.current.y;
+    const threshold = 20;
+    let movement = { forward: false, backward: false, left: false, right: false };
+    if (dy < -threshold) movement.forward = true;
+    if (dy > threshold) movement.backward = true;
+    if (dx < -threshold) movement.left = true;
+    if (dx > threshold) movement.right = true;
+    setMovement(movement);
   };
 
-  const handleButtonRelease = (direction) => {
-    switch (direction) {
-      case 'forward':
-        setMovement((prev) => ({ ...prev, forward: false }));
-        break;
-      case 'backward':
-        setMovement((prev) => ({ ...prev, backward: false }));
-        break;
-      case 'left':
-        setMovement((prev) => ({ ...prev, left: false }));
-        break;
-      case 'right':
-        setMovement((prev) => ({ ...prev, right: false }));
-        break;
-      default:
-        break;
-    }
+  const handleJoystickEnd = () => {
+    dragStart.current = null;
+    setMovement({ forward: false, backward: false, left: false, right: false });
   };
 
+  // Drag-to-look logic
+  const lookStart = useRef(null);
+  const handleLookStart = (e) => {
+    lookStart.current = {
+      x: e.touches[0].clientX,
+      y: e.touches[0].clientY,
+    };
+  };
+  const handleLookMove = (e) => {
+    if (!lookStart.current) return;
+    const dx = e.touches[0].clientX - lookStart.current.x;
+    window.dispatchEvent(new CustomEvent('mobile-look', { detail: { dx } }));
+    lookStart.current = {
+      x: e.touches[0].clientX,
+      y: e.touches[0].clientY,
+    };
+  };
+  const handleLookEnd = () => {
+    lookStart.current = null;
+  };
+
+  if (!isMobile()) return null;
   return (
-    <div>
-      <button
-        style={{ ...buttonStyle, left: '20px' }}
-        onTouchStart={() => handleButtonClick('left')}
-        onTouchEnd={() => handleButtonRelease('left')}
+    <>
+      {/* Joystick for movement */}
+      <div
+        ref={joystickRef}
+        style={{
+          position: 'absolute',
+          left: '30px',
+          bottom: '30px',
+          width: '100px',
+          height: '100px',
+          background: 'rgba(50,50,50,0.3)',
+          borderRadius: '50%',
+          touchAction: 'none',
+          zIndex: 10,
+        }}
+        onTouchStart={handleJoystickStart}
+        onTouchMove={handleJoystickMove}
+        onTouchEnd={handleJoystickEnd}
       >
-        L
-      </button>
-      <button
-        style={{ ...buttonStyle, right: '20px' }}
-        onTouchStart={() => handleButtonClick('right')}
-        onTouchEnd={() => handleButtonRelease('right')}
-      >
-        R
-      </button>
-      <button
-        style={{ ...buttonStyle, bottom: '80px', left: '50%' }}
-        onTouchStart={() => handleButtonClick('forward')}
-        onTouchEnd={() => handleButtonRelease('forward')}
-      >
-        F
-      </button>
-      <button
-        style={{ ...buttonStyle, bottom: '20px', left: '50%' }}
-        onTouchStart={() => handleButtonClick('backward')}
-        onTouchEnd={() => handleButtonRelease('backward')}
-      >
-        B
-      </button>
-    </div>
+        <div style={{
+          position: 'absolute',
+          left: '35px',
+          top: '35px',
+          width: '30px',
+          height: '30px',
+          background: '#333',
+          borderRadius: '50%',
+        }} />
+      </div>
+      {/* Drag area for look */}
+      <div
+        ref={dragAreaRef}
+        style={{
+          position: 'absolute',
+          right: '0',
+          bottom: '0',
+          width: '50vw',
+          height: '100vh',
+          zIndex: 10,
+        }}
+        onTouchStart={handleLookStart}
+        onTouchMove={handleLookMove}
+        onTouchEnd={handleLookEnd}
+      />
+    </>
   );
 };
 

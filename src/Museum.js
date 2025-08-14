@@ -34,13 +34,23 @@ const Museum = () => {
       a-left, d-right
       " />
       <Page position={[4.9, 1.5, 0]} rotation={[0, -Math.PI/2, 0]} content="
-      This will be a link to my normal CV.
+      Work Experience:
+      - Institute for Energy Technology (IFE) - Summer Research Assistant (2025)
+      - Skatteetaten - Summer Fullstack Developer (2024)
+      - Tangen Uteanlegg AS - Anleggsgartner (2020-2022)
+      - Sulland Mo - Care Preparation (2019-2020)
       " />
       <Page position={[-4.9, 1.5, 0]} rotation={[0, Math.PI / 2, 0]} content="
-      This will be a link to earlier projects.
+      Education:
+      - University of Oslo - Master's in Computational Science: Physics (2024-Present)
+      - University of Uppsala - Theoretical Physics (2023-2024, not completed)
+      - University of Oslo - Bachelor's in Physics (2020-2023)
       " />
       <Page position={[0, 1.5, 4.9]} rotation={[0, Math.PI, 0]} content="
-      This will be a link to earlier work experience.
+      Skills:
+      - Programming: JavaScript, TypeScript, Python, C/C++
+      - Frameworks: React, Node.js, PyTorch
+      - Tools: Git, Docker, OpenMP, MPI
       " />
     </group>
   );
