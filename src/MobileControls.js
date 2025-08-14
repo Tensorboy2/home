@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import useKeyboardControls from './hooks/useKeyboardControls';
 
 // Simple mobile device detection
@@ -9,20 +9,35 @@ const MobileControls = () => {
   const joystickRef = useRef(null);
   const dragAreaRef = useRef(null);
   const dragStart = useRef(null);
+  const [knobPos, setKnobPos] = useState({ x: 70, y: 70 }); // center by default
 
   // Joystick logic
   const handleJoystickStart = (e) => {
+    const rect = joystickRef.current.getBoundingClientRect();
     dragStart.current = {
       x: e.touches[0].clientX,
       y: e.touches[0].clientY,
+      rect,
     };
     setMovement({ forward: false, backward: false, left: false, right: false });
+    setKnobPos({ x: 70, y: 70 });
   };
 
   const handleJoystickMove = (e) => {
     if (!dragStart.current) return;
-    const dx = e.touches[0].clientX - dragStart.current.x;
-    const dy = e.touches[0].clientY - dragStart.current.y;
+    const rect = dragStart.current.rect;
+    const touch = e.touches[0];
+    const localX = touch.clientX - rect.left;
+    const localY = touch.clientY - rect.top;
+    // Clamp knob position to joystick area
+    const clamp = (val, min, max) => Math.max(min, Math.min(max, val));
+    const knobX = clamp(localX, 0, rect.width);
+    const knobY = clamp(localY, 0, rect.height);
+    setKnobPos({ x: knobX, y: knobY });
+
+    // Calculate movement direction
+    const dx = knobX - rect.width / 2;
+    const dy = knobY - rect.height / 2;
     const threshold = 20;
     let movement = { forward: false, backward: false, left: false, right: false };
     if (dy < -threshold) movement.forward = true;
@@ -35,6 +50,7 @@ const MobileControls = () => {
   const handleJoystickEnd = () => {
     dragStart.current = null;
     setMovement({ forward: false, backward: false, left: false, right: false });
+    setKnobPos({ x: 70, y: 70 }); // Reset knob to center
   };
 
   // Drag-to-look logic
@@ -85,14 +101,15 @@ const MobileControls = () => {
         ref={joystickRef}
         style={{
           position: 'absolute',
-          left: '30px',
-          bottom: '30px',
-          width: '100px',
-          height: '100px',
+          left: '20px',
+          bottom: '20px',
+          width: '140px',
+          height: '140px',
           background: 'rgba(50,50,50,0.3)',
           borderRadius: '50%',
           touchAction: 'none',
           zIndex: 10,
+          userSelect: 'none',
         }}
         onTouchStart={handleJoystickStart}
         onTouchMove={handleJoystickMove}
@@ -100,12 +117,14 @@ const MobileControls = () => {
       >
         <div style={{
           position: 'absolute',
-          left: '35px',
-          top: '35px',
-          width: '30px',
-          height: '30px',
+          left: `${knobPos.x - 25}px`,
+          top: `${knobPos.y - 25}px`,
+          width: '50px',
+          height: '50px',
           background: '#333',
           borderRadius: '50%',
+          boxShadow: '0 0 10px #222',
+          transition: dragStart.current ? 'none' : 'left 0.2s, top 0.2s',
         }} />
       </div>
       {/* Drag area for look */}
